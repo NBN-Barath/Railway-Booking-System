@@ -2,56 +2,64 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Utility {
-    public HashMap<Character, ArrayList<String>> generateSeatingPatterns(int noOfSeats, String screenGrid) {
+
+    public HashMap<String, ArrayList<String>> generateSeatingPatterns(int noOfSeats, String screenGrid) {
         int remainingSeats = noOfSeats;
+
+        // Split and parse grid safely
         String[] splitGrid = screenGrid.split("\\|");
 
-        // Calculate the total seats required per row
         int seatsPerRow = 0;
-        for (String grid : splitGrid) {
-            int temp = Integer.parseInt(grid);
-            seatsPerRow += temp;
+        try {
+            for (String grid : splitGrid) {
+                seatsPerRow += Integer.parseInt(grid.trim());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid grid format. Please use format like 3|2|3 with only numbers.");
+            return null;  // Return null if grid is invalid
         }
-        // Check if the total number of seats is divisible by seatsPerRow
-        if (remainingSeats % seatsPerRow != 0) {
-            System.out.println("Invalid Grid");
+
+        // Validate seat count
+        if (seatsPerRow == 0 || remainingSeats % seatsPerRow != 0) {
+            System.out.println("Error: Total seats must be a multiple of seats per row.");
             return null;
         }
 
-        // Create the seating arrangement
-        var seatArrangement = new HashMap<Character, ArrayList<String>>();
-        char ch = 'A';
+        // Generate layout
+        HashMap<String, ArrayList<String>> seatArrangement = new HashMap<>();
+        int rowIndex = 0;
 
         while (remainingSeats > 0) {
             ArrayList<String> rowSeats = new ArrayList<>();
-            int n = 1;
-
-            // Handle lowercase letters after Z
-            if ((int) ch > 90 && (int) ch < 97) {
-                ch = 'a';
-            }
+            String rowLabel = getRowLabel(rowIndex);
+            int seatNumber = 1;
 
             for (int i = 0; i < splitGrid.length; i++) {
-                int seatsInBlock = Integer.parseInt(splitGrid[i]);
+                int seatsInBlock = Integer.parseInt(splitGrid[i].trim());
 
                 for (int j = 0; j < seatsInBlock; j++) {
-                    rowSeats.add(String.format("[%d]", n));
-                    n++;
+                    rowSeats.add(rowLabel + "[" + seatNumber++ + "]");
                 }
 
-                // Add a separator between blocks, except for the last block
-                if (i < splitGrid.length - 1) { // Fix the condition here
+                if (i < splitGrid.length - 1) {
                     rowSeats.add(" <==> ");
                 }
             }
 
-            // Add the row to the seating arrangement
-            seatArrangement.put(ch, rowSeats);
-            ch++;
-
+            seatArrangement.put(rowLabel, rowSeats);
+            rowIndex++;
             remainingSeats -= seatsPerRow;
         }
 
         return seatArrangement;
+    }
+
+    private String getRowLabel(int index) {
+        StringBuilder label = new StringBuilder();
+        while (index >= 0) {
+            label.insert(0, (char) ('A' + (index % 26)));
+            index = (index / 26) - 1;
+        }
+        return label.toString();
     }
 }

@@ -1,8 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class RBS_Actions {
     static ArrayList<Accounts> accountsList = RBS.getAccountsArrayList();
+    static HashMap<String,Train> trainHashMap = RBS.getTrainHashMap();
 
     public static void start(){
         Scanner scanner = new Scanner(System.in);
@@ -38,18 +40,33 @@ public class RBS_Actions {
     public static void adminAction(Accounts loginAccount,Scanner scanner){
         System.out.println("Admin Actions:");
         System.out.println("==============");
-        System.out.println("1) Add new Admin \n 2)View all Admin \n 3) Delete Admin");
-        int adminChoice = scanner.nextInt();
-        switch (adminChoice){
-            case 1:
-                AdminActions.addNewAdmin(accountsList,scanner);
-                break;
-            case 2:
-                AdminActions.viewAllAdmins(accountsList);
-                break;
-            case 3:
-                AdminActions.deleteAdmin(accountsList,scanner);
+        while (true){
+            System.out.println("1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train");
+            int adminChoice = scanner.nextInt();
+            switch (adminChoice){
+                case 1:
+                    AdminActions.addNewAdmin(accountsList,scanner);
+                    break;
+                case 2:
+                    AdminActions.viewAllAdmins(accountsList);
+                    break;
+                case 3:
+                    AdminActions.deleteAdmin(accountsList,scanner);
+                    break;
+                case 4:
+                    AdminActions.addTrain(trainHashMap,scanner);
+                    break;
+                case 5:
+                    AdminActions.viewTrains(trainHashMap);
+                    break;
+//            case :
+//                AdminActions.;
+//                break;
+                case 6:
+                    return;
+            }
         }
+
     }
 
     public static void userAction(Accounts loginAccount,Scanner scanner){

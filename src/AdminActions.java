@@ -1,3 +1,5 @@
+import Compartment.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -58,31 +60,152 @@ public class AdminActions {
         }
     }
 
-    public static void addTrain(HashMap<String,Train> trainHashMap,Scanner scanner) {
+    public static void addTrain(HashMap<String, Train> trainHashMap, Scanner scanner) {
         System.out.println("\tAdding a train");
-        System.out.print("\n Enter the Train Name:");
-        String trainName = getValidName(scanner,"Not a valid name...");
-        for (var checkName : trainHashMap.keySet()){
-            if(!trainName.equalsIgnoreCase(checkName)){
-                System.out.println("Enter the Train id:");
-                String trainId = scanner.next();
-                for (var checkId : trainHashMap.keySet()){
-                    var temp = trainHashMap.get(checkId);
-                    if(!temp.getTrain_Id().equalsIgnoreCase(trainId)){
-                        System.out.print("Enter the number of stop of the train :");
-                        int noOfStop = getPositiveInteger(scanner,"Enter the positive number...");
 
-                    }else {
-                        System.out.printf("The train with the id %s is already exist.. \n Train id must be unique... ",trainId);
-                    }
-                }
-            } else {
-                System.out.printf("The train with the name %s is already exist.. ",trainName);
+        // Train name input
+        System.out.print("\nEnter the Train Name: ");
+        String trainName = getValidName(scanner, "Not a valid name...");
 
+        // Check if train name already exists
+        boolean nameExists = false;
+        for (Train t : trainHashMap.values()) {
+            if (t.getTrainName().equalsIgnoreCase(trainName)) {
+                nameExists = true;
+                break;
             }
         }
 
+        if (nameExists) {
+            System.out.printf("The train with the name '%s' already exists.\n", trainName);
+            return;
+        }
+
+        // Train ID input
+        System.out.print("Enter the Train ID: ");
+        String trainId = scanner.next();
+
+        if (trainHashMap.containsKey(trainId)) {
+            System.out.printf("The train with the ID '%s' already exists.\nTrain ID must be unique.\n", trainId);
+            return;
+        }
+
+        // Get number of stops
+        System.out.print("Enter the number of stops: ");
+        int noOfStops = getPositiveInteger(scanner, "Enter a positive number of stops...");
+
+        // Get number of compartments
+        System.out.print("Enter the number of compartments: ");
+        int noOfCompartments = getPositiveInteger(scanner, "Enter a positive number of compartments...");
+
+        ArrayList<Compartment> compartmentArrayList = new ArrayList<>();
+        Utility utility = new Utility();
+
+        // Loop to add compartments
+        for (int i = 0; i < noOfCompartments; i++) {
+            System.out.print("\nEnter the compartment ID: ");
+            String compartmentId = scanner.next();
+
+            // Display class types
+            System.out.println("\nAvailable Class Types:");
+            ClassTypes[] classTypes = ClassTypes.values();
+            for (int j = 0; j < classTypes.length; j++) {
+                System.out.println((j + 1) + ". " + classTypes[j]);
+            }
+
+            System.out.print("Enter your choice (1-" + classTypes.length + "): ");
+            int choice = scanner.nextInt();
+            ClassTypes selectedType = null;
+
+            if (choice >= 1 && choice <= classTypes.length) {
+                selectedType = classTypes[choice - 1];
+            } else {
+                System.out.println("Invalid choice. Try again.");
+                i--;
+                continue;
+            }
+
+            System.out.print("Enter the total number of seats: ");
+            int numOfSeats = getPositiveInteger(scanner, "Number of seats must be a positive integer: ");
+
+            System.out.print("Enter the grid (e.g., 2x2, 3x3): ");
+            String screenGrid = scanner.next();
+            var grid = utility.generateSeatingPatterns(numOfSeats, screenGrid);
+
+            if (grid == null) {
+                System.out.println("Invalid grid! Please re-enter the compartment.");
+                i--; // retry current compartment
+                continue;
+            }
+
+            Compartment compartment = new Compartment(trainId, compartmentId, selectedType, numOfSeats, grid);
+            compartmentArrayList.add(compartment);
+        }
+
+        // Create and add the train
+        Train train = new Train(trainName, trainId, noOfCompartments, compartmentArrayList);
+        trainHashMap.put(trainId, train);
+
+        // Add path/stops
+        addPath(train, noOfStops, scanner);
+
+        System.out.println("Train added successfully!");
     }
+
+    public static void addPath(Train train,int noOfStop,Scanner scanner){
+        ArrayList<Stop> path = new ArrayList<>();
+        for (int i = 0; i < noOfStop; i++) {
+            System.out.print("Enter name of stop " + (i + 1) + ": ");
+            String stationName = scanner.next();
+            System.out.print("Enter arrival time at " + stationName + ": ");
+            String arrival = scanner.next();
+            System.out.print("Enter departure time from " + stationName + ": ");
+            String departure = scanner.next();
+
+            path.add(new Stop(stationName, arrival, departure));
+            train.setPath(path);
+        }
+
+    }
+
+    public static void viewTrains(HashMap<String, Train> trainHashMap) {
+        if (trainHashMap.isEmpty()) {
+            System.out.println("No trains available to display.");
+            return;
+        }
+
+        System.out.println("========== Train Details ==========");
+        for (Train train : trainHashMap.values()) {
+            System.out.println("Train Name      : " + train.getTrainName());
+            System.out.println("Train ID        : " + train.getTrainId());
+            System.out.println("Compartments    : " + train.getNumberOfCompartments());
+
+            System.out.println("----- Compartments -----");
+            for (Compartment comp : train.getCompartments()) {
+                System.out.println("Compartment ID   : " + comp.getCompartmentId());
+                System.out.println("Class Type       : " + comp.getClassType());
+                System.out.println("Seats            : " + comp.getTotalSeats());
+                System.out.println();
+            }
+
+            System.out.println("----- Train Path / Stops -----");
+            ArrayList<Stop> path = train.getPath();
+//            if (path != null && !path.isEmpty()) {
+            if (!path.isEmpty()) {
+                for (int i = 0; i < path.size(); i++) {
+                    Stop stop = path.get(i);
+                    System.out.println((i + 1) + ". Station: " + stop.getStationName()
+                            + " | Arrival: " + stop.getArrivalTime()
+                            + " | Departure: " + stop.getDepartureTime());
+                }
+            } else {
+                System.out.println("No route data available.");
+            }
+
+            System.out.println("-----------------------------------\n");
+        }
+    }
+
 
     public static String getValidName(Scanner scanner,String errorMessage){
         while (true) {

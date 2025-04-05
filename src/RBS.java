@@ -10,4 +10,7 @@ public class RBS {
         return accountsArrayList;
     }
 
+    public static HashMap<String, Train> getTrainHashMap() {
+        return trainHashMap;
+    }
 }
