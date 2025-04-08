@@ -1,6 +1,9 @@
 import Compartment.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -128,7 +131,7 @@ public class AdminActions {
             System.out.print("Enter the total number of seats: ");
             int numOfSeats = getPositiveInteger(scanner, "Number of seats must be a positive integer: ");
 
-            System.out.print("Enter the grid (e.g., 2x2, 3x3): ");
+            System.out.print("Enter the grid (e.g., 2|2, 3|3|3): ");
             String screenGrid = scanner.next();
             var grid = utility.generateSeatingPatterns(numOfSeats, screenGrid);
 
@@ -157,10 +160,9 @@ public class AdminActions {
         for (int i = 0; i < noOfStop; i++) {
             System.out.print("Enter name of stop " + (i + 1) + ": ");
             String stationName = scanner.next();
-            System.out.print("Enter arrival time at " + stationName + ": ");
-            String arrival = scanner.next();
-            System.out.print("Enter departure time from " + stationName + ": ");
-            String departure = scanner.next();
+            LocalTime arrival = getValidTime(scanner,"Enter arrival time at " + stationName + ": ");
+            LocalTime departure = getValidTime(scanner,"Enter departure time from " + stationName + ": ");
+
 
             path.add(new Stop(stationName, arrival, departure));
             train.setPath(path);
@@ -190,13 +192,10 @@ public class AdminActions {
 
             System.out.println("----- Train Path / Stops -----");
             ArrayList<Stop> path = train.getPath();
-//            if (path != null && !path.isEmpty()) {
-            if (!path.isEmpty()) {
+            if (path != null && !path.isEmpty()) {
                 for (int i = 0; i < path.size(); i++) {
                     Stop stop = path.get(i);
-                    System.out.println((i + 1) + ". Station: " + stop.getStationName()
-                            + " | Arrival: " + stop.getArrivalTime()
-                            + " | Departure: " + stop.getDepartureTime());
+                    System.out.println((i + 1) + ". Station: " + stop.getStationName() + " | Arrival: " + stop.getArrivalTime() + " | Departure: " + stop.getDepartureTime());
                 }
             } else {
                 System.out.println("No route data available.");
@@ -206,11 +205,33 @@ public class AdminActions {
         }
     }
 
+    public static void deleteTrain(HashMap<String, Train> trainHashMap,Scanner scanner){
+        System.out.print("Enter the train id to delete:");
+        String trainId = scanner.next();
+        for(String id : trainHashMap.keySet()){
+            if(id.equals(trainId)){
+                trainHashMap.remove(id);
+                System.out.print("Train was deleted");
+            }
+        }
+    }
+
+    public static LocalTime getValidTime(Scanner scanner,String stringToBeDisplayed) { // getting time
+        while (true) {
+            System.out.print(stringToBeDisplayed);
+            try {
+                String timeInput = scanner.next();
+                return LocalTime.parse(timeInput, RBS.getTimeFormatter());
+            } catch (Exception e) {
+                System.out.println("Invalid time format!");
+            }
+        }
+    }
 
     public static String getValidName(Scanner scanner,String errorMessage){
         while (true) {
             String name = scanner.next();
-            if (name.contains("*=")) {
+            if (name.contains("*=!-_+/")) {
                 System.out.println("Not a valid name...");
             }else {
                 return name;
@@ -219,14 +240,18 @@ public class AdminActions {
     }
 
     public static int getPositiveInteger(Scanner scanner, String errorMessage) {// method to get positive integer
-        try {
-            int value = scanner.nextInt();
-            if (value > 0) return value;
-        } catch (Exception ignored) {
+        while (true) {
+            try {
+                String input = scanner.next();
+                int value = Integer.parseInt(input);
+                if (value > 0) {
+                    return value;
+                } else {
+                    System.out.println(errorMessage);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format...");
+            }
         }
-        System.out.println(errorMessage);
-        scanner.next(); // Clear invalid input
-        return -1;
     }
-
 }

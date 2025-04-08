@@ -41,7 +41,7 @@ public class RBS_Actions {
         System.out.println("Admin Actions:");
         System.out.println("==============");
         while (true){
-            System.out.println("1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train");
+            System.out.println(" 1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train \n 6)Delete train");
             int adminChoice = scanner.nextInt();
             switch (adminChoice){
                 case 1:
@@ -59,10 +59,15 @@ public class RBS_Actions {
                 case 5:
                     AdminActions.viewTrains(trainHashMap);
                     break;
+                case 6:
+                    AdminActions.deleteTrain(trainHashMap,scanner);
+                    break;
+                case 7:
+
 //            case :
 //                AdminActions.;
 //                break;
-                case 6:
+                case 8:
                     return;
             }
         }

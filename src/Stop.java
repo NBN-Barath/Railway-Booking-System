@@ -1,9 +1,11 @@
+import java.time.LocalTime;
+
 public class Stop {
     private String stationName;
-    private String arrivalTime;
-    private String departureTime;
+    private LocalTime arrivalTime;
+    private LocalTime departureTime;
 
-    public Stop(String stationName, String arrivalTime, String departureTime) {
+    public Stop(String stationName, LocalTime arrivalTime, LocalTime departureTime) {
         this.stationName = stationName;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
@@ -13,11 +15,11 @@ public class Stop {
         return stationName;
     }
 
-    public String getArrivalTime() {
+    public LocalTime getArrivalTime() {
         return arrivalTime;
     }
 
-    public String getDepartureTime() {
+    public LocalTime getDepartureTime() {
         return departureTime;
     }
 
