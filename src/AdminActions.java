@@ -64,7 +64,8 @@ public class AdminActions {
     }
 
     public static void addTrain(HashMap<String, Train> trainHashMap, Scanner scanner) {
-        System.out.println("\tAdding a train");
+        System.out.println("\t ========== Adding a train ==========");
+
 
         // Train name input
         System.out.print("\nEnter the Train Name: ");
@@ -106,8 +107,25 @@ public class AdminActions {
 
         // Loop to add compartments
         for (int i = 0; i < noOfCompartments; i++) {
+            System.out.println("Compartment No "+ i+1);
             System.out.print("\nEnter the compartment ID: ");
             String compartmentId = scanner.next();
+            boolean isCompartmentExists = false;
+            for (Train train : trainHashMap.values()) {
+                for (Compartment compartment : train.getCompartments()) {
+                    if (compartment.getCompartmentId().equalsIgnoreCase(compartmentId)) {
+                        isCompartmentExists = true;
+                        break;
+                    }
+                }
+                if (isCompartmentExists) break;
+            }
+
+            if (isCompartmentExists) {
+                System.out.println("Compartment ID already exists! Please enter a unique one.");
+                i--;
+                continue;
+            }
 
             // Display class types
             System.out.println("\nAvailable Class Types:");
@@ -176,7 +194,7 @@ public class AdminActions {
             return;
         }
 
-        System.out.println("========== Train Details ==========");
+        System.out.println("\t========== Train Details ==========");
         for (Train train : trainHashMap.values()) {
             System.out.println("Train Name      : " + train.getTrainName());
             System.out.println("Train ID        : " + train.getTrainId());
@@ -187,8 +205,21 @@ public class AdminActions {
                 System.out.println("Compartment ID   : " + comp.getCompartmentId());
                 System.out.println("Class Type       : " + comp.getClassType());
                 System.out.println("Seats            : " + comp.getTotalSeats());
+                System.out.println("Seating Arrangement:");
+                for (var row : comp.getSeatArrangement().entrySet()) {
+                    System.out.print(row.getKey() + ": {");
+                    ArrayList<String> rowSeats = row.getValue();
+                    for (int i = 0; i < rowSeats.size(); i++) {
+                        System.out.print(rowSeats.get(i));
+                        if (i < rowSeats.size() - 1) {
+                            System.out.print(", ");
+                        }
+                    }
+                    System.out.println("}");
+                }
                 System.out.println();
             }
+
 
             System.out.println("----- Train Path / Stops -----");
             ArrayList<Stop> path = train.getPath();
@@ -206,12 +237,13 @@ public class AdminActions {
     }
 
     public static void deleteTrain(HashMap<String, Train> trainHashMap,Scanner scanner){
+        System.out.println("\t========== Deleting Train ==========");
         System.out.print("Enter the train id to delete:");
         String trainId = scanner.next();
         for(String id : trainHashMap.keySet()){
             if(id.equals(trainId)){
                 trainHashMap.remove(id);
-                System.out.print("Train was deleted");
+                System.out.println("Train was deleted");
             }
         }
     }
@@ -253,5 +285,23 @@ public class AdminActions {
                 System.out.println("Invalid number format...");
             }
         }
+    }
+
+    public static void changePath(HashMap<String, Train> trainHashMap ,Scanner scanner){
+        System.out.println("\t========== Changing path for Train ==========");
+        System.out.print("Enter the train Id: ");
+        String id = scanner.next();
+        for(String trainId : trainHashMap.keySet()){
+            if(trainId.equalsIgnoreCase(id)){
+                System.out.print("Enter the no.of Stops: ");
+                int noOfStops = getPositiveInteger(scanner, "Enter a positive number of compartments...");
+                addPath(trainHashMap.get(trainId),noOfStops,scanner);
+                System.out.println("Path changed Successfully");
+            }
+        }
+    }
+
+    public static void editTrain(HashMap<String, Train> trainHashMap,Scanner scanner){
+        System.out.println("1. ");
     }
 }
