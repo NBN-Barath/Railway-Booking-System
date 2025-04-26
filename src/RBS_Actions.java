@@ -16,7 +16,9 @@ public class RBS_Actions {
             int choice = scanner.nextInt();
             if (choice == 1) {
                 Accounts loginAccount = commonActions.login(accountsList,scanner);
-                checkWhoYouAre(loginAccount,scanner);
+                if (loginAccount != null) {
+                    checkWhoYouAre(loginAccount,scanner);
+                }
             } else if (choice == 2) {
                 UserAction.registerUser(accountsList,scanner);
             } else if (choice == 3) {
@@ -31,17 +33,17 @@ public class RBS_Actions {
 
     public static void checkWhoYouAre(Accounts loginAccount,Scanner scanner){
         if (loginAccount instanceof AdminAccount){
-            adminAction(loginAccount,scanner);
+            adminAction((AdminAccount) loginAccount,scanner);
         }else if(loginAccount instanceof UserAccount) {
-            userAction(loginAccount,scanner);
+            userAction((UserAccount) loginAccount,scanner);
         }
     }
 
-    public static void adminAction(Accounts loginAccount,Scanner scanner){
+    public static void adminAction(AdminAccount loginAccount,Scanner scanner){
         System.out.println("Admin Actions:");
         System.out.println("==============");
         while (true){
-            System.out.println(" 1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train \n 6) Delete train \n 7) Change path");
+            System.out.println(" 1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train \n 6) Change path \n 7) Exit");
             int adminChoice = scanner.nextInt();
             switch (adminChoice){
                 case 1:
@@ -59,25 +61,36 @@ public class RBS_Actions {
                 case 5:
                     AdminActions.viewTrains(trainHashMap);
                     break;
+//                case 6:
+//                    AdminActions.deleteTrain(trainHashMap,scanner);
+//                    break;
                 case 6:
-                    AdminActions.deleteTrain(trainHashMap,scanner);
+                    AdminActions.editTrain(trainHashMap,scanner);
                     break;
                 case 7:
-                    AdminActions.changePath(trainHashMap,scanner);
-                    break;
-//            case :
-//                AdminActions.;
-//                break;
-                case 8:
+                    System.out.println("Exiting");
                     return;
+                default:
+                    System.out.println("Invalid choice");
+                    break;
             }
         }
 
     }
 
-    public static void userAction(Accounts loginAccount,Scanner scanner){
+    public static void userAction(UserAccount loginAccount,Scanner scanner){
         System.out.println("User Actions:");
         System.out.println("==============");
+        while (true) {
+            System.out.println("1.View Train");
+            System.out.print("Enter your choice : ");
+            int choice = scanner.nextInt();
+            switch (choice){
+                case 1:
+                    UserAction.viewTrain(loginAccount,trainHashMap,scanner);
+                    break;
+            }
+        }
 
     }
 

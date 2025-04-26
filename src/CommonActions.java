@@ -2,36 +2,39 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CommonActions {
-    public Accounts login(ArrayList<Accounts> accountsGenericList, Scanner scanner) // common login to user and admin
-    {
-        System.out.println("Enter the User Id");
-        String id = scanner.next();// get id
-//        if (!accountsGenericList.equals(null)) {
-            for (Accounts accounts : accountsGenericList) // iterate all account
-            {
-                if (accounts.getId().equals(id)) { // check id
-                    System.out.print("Enter User PIN: ");
-                    String userPin = scanner.next();
 
-                    if (accounts.getPassword().equals(userPin)) { // Check admin pin is valid
-                        System.out.println("User login successful.");
-                        System.out.println("\tUser Name:" + accounts.getName() + "\n\tUser Id:" + accounts.getId());
-                        return accounts;// return user when login is successful
-                    } else {
-                        System.out.println("Entered wrong Id or Password ");
-                    }
+    // Common login method for both users and admins
+    public Accounts login(ArrayList<Accounts> accountsGenericList, Scanner scanner) {
+        System.out.print("Enter the User ID: ");
+        String id = scanner.next();
+
+        for (Accounts account : accountsGenericList) {
+            if (account.getId().equals(id)) {
+                System.out.print("Enter User PIN: ");
+                String userPin = scanner.next();
+
+                if (account.getPassword().equals(userPin)) {
+                    System.out.println("Login successful!");
+                    System.out.println("\tUser Name: " + account.getName());
+                    System.out.println("\tUser ID  : " + account.getId());
+                    return account;
+                } else {
+                    System.out.println("Incorrect PIN. Please try again.");
+                    return null;
                 }
             }
-            return null;
-//        } else {
-//            System.out.println("No id found");
-//            System.out.println("Want to register(Yes or no):");{
-//                if (scanner.next().equalsIgnoreCase("yes")){
-//                    UserAction.registerUser(accountsGenericList,scanner);
-//                }
-//            }
-//            return null;
-//        }
-    }
+        }
 
+        // If no matching ID found
+        System.out.println("No account found with ID: " + id);
+        System.out.print("Would you like to register? (yes/no): ");
+        String choice = scanner.next();
+
+        if (choice.equalsIgnoreCase("yes")) {
+            UserAction.registerUser(accountsGenericList, scanner);
+        } else {
+            System.out.println("Returning to main menu.");
+        }
+        return null;
+    }
 }

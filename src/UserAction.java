@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class UserAction {
@@ -23,8 +24,6 @@ public class UserAction {
         String registerUserEmailId = scanner.next();
         System.out.print("Enter your Phone Number: ");
         String registerUserPhoneNumber = scanner.next();
-        System.out.println("Enter the Location of the User:");
-        String registerUserLocation = scanner.next();
 
         // Verification process
         System.out.println("User needs to verify:");
@@ -59,5 +58,17 @@ public class UserAction {
         UserAccount usersAccount = new UserAccount(registeringUserName, registeringUserId, registerUserPin, registerUserPhoneNumber, registerUserEmailId);
         accountsArrayList.add(usersAccount);
         System.out.println("User successfully registered!");
+    }
+    
+    public static void viewTrain(UserAccount loginedUser , HashMap<String,Train> trainHashMap , Scanner scanner){
+        System.out.print("Enter the location to view train:");
+        String location = scanner.next();
+        for ( Train train : trainHashMap.values()){
+            for (Stop stop : train.getPath()){
+                if(location.equalsIgnoreCase(stop.getStationName())){
+                    train.displayTrainDetails();
+                }
+            }
+        }
     }
 }
