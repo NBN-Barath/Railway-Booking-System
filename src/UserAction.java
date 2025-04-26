@@ -1,3 +1,5 @@
+import Compartment.Compartment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -60,15 +62,61 @@ public class UserAction {
         System.out.println("User successfully registered!");
     }
     
-    public static void viewTrain(UserAccount loginedUser , HashMap<String,Train> trainHashMap , Scanner scanner){
+    public static void viewTrain(UserAccount loggedUser , HashMap<String,Train> trainHashMap , Scanner scanner){
+        System.out.println("\t========== Viewing Train ==========");
         System.out.print("Enter the location to view train:");
         String location = scanner.next();
         for ( Train train : trainHashMap.values()){
             for (Stop stop : train.getPath()){
                 if(location.equalsIgnoreCase(stop.getStationName())){
                     train.displayTrainDetails();
+                    bookingTicket(loggedUser,trainHashMap,scanner);
                 }
             }
         }
+        System.out.println("No train data currently available at the station");
+    }
+
+    public static void bookTicket(UserAccount loggedUser , HashMap<String,Train> trainHashMap , Scanner scanner){
+        System.out.println("\t========== Choose Ticket For Booking Ticket ==========");
+        viewTrain(loggedUser,trainHashMap,scanner);
+    }
+
+    public static void bookingTicket(UserAccount loggedUser ,HashMap<String,Train> trainHashMap , Scanner scanner){
+        System.out.println("\t========== Book Ticket ==========");
+        String trainId;
+        while (true){
+            System.out.print("Enter the train Id to book ticket (or 0 to exit): ");
+            trainId = scanner.next();
+            if (trainId.equals("0")) {
+                System.out.println("Exiting...");
+                return;
+            }
+            if(trainHashMap.containsKey(trainId)){
+                break;
+            }
+            System.out.println("Train Id not found. Please Try Again");
+        }
+        System.out.println("You selected Train :"+trainHashMap.get(trainId).getTrainName() );
+        trainHashMap.get(trainId).displayTrainDetails();
+
+        System.out.println("Available Compartments:");
+        ArrayList<Compartment> compartments = trainHashMap.get(trainId).getCompartments();
+
+        for (int i = 0; i < compartments.size(); i++) {
+            System.out.println((i + 1) + ". " + compartments.get(i).getClassType().getName());
+        }
+
+        System.out.print("Choose compartment by number: ");
+        int compChoice = scanner.nextInt();
+        Compartment selectedCompartment = compartments.get(compChoice - 1);
+
+        String start
+
+
+
+
+
+
     }
 }

@@ -44,6 +44,7 @@ public class RBS_Actions {
         System.out.println("==============");
         while (true){
             System.out.println(" 1) Add new Admin \n 2) View all Admin \n 3) Delete Admin \n 4) Add Train \n 5) View Train \n 6) Change path \n 7) Exit");
+            System.out.print("Enter your choice : ");
             int adminChoice = scanner.nextInt();
             switch (adminChoice){
                 case 1:

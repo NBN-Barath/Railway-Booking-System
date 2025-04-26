@@ -1,9 +1,7 @@
 import Compartment.*;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -49,7 +47,7 @@ public class AdminActions {
         System.out.println("Available Admins");
         for (Accounts accounts: accountsArrayList){
             if(accounts instanceof AdminAccount){
-                System.out.println(accounts.toString());//print details
+                System.out.println(accounts);//print details
             }
         }
     }
@@ -107,15 +105,24 @@ public class AdminActions {
         // Create and add the train
         Train train = new Train(trainName, trainId);
         trainHashMap.put(trainId, train);
-        addCompartment(trainHashMap,train,noOfCompartments,scanner);
+        boolean isCompartmentAdded = false;
+        while (!isCompartmentAdded){
+            isCompartmentAdded = addCompartment(trainHashMap,train,noOfCompartments,scanner);
+        }
+
         // Add path/stops
-        addPath(train, scanner);
+        boolean isPathAdded = false;
+        while (!isPathAdded){
+            isPathAdded = addPath(train, scanner);
+        }
+
 
         System.out.println("Train added successfully!");
     }
 
-    public static int addPath(Train train,Scanner scanner){
+    public static boolean addPath(Train train,Scanner scanner){
         // Get number of stops
+        boolean isPathAdded = false;
         System.out.print("Enter the number of stops: ");
         int noOfStops = getPositiveInteger(scanner, "Enter a positive number of stops...");
 
@@ -129,7 +136,9 @@ public class AdminActions {
             path.add(new Stop(stationName, arrival, departure));
         }
         train.setPath(path);
-        return noOfStops;
+        train.setNoOfStops(noOfStops);
+        isPathAdded = true;
+        return isPathAdded;
     }
 
     public static void viewTrains(HashMap<String, Train> trainHashMap) {
@@ -172,7 +181,7 @@ public class AdminActions {
         while (true) {
             String name = scanner.next();
             if (name.contains("*=!-_+/")) {
-                System.out.println("Not a valid name...");
+                System.out.println(errorMessage);
             }else {
                 return name;
             }
@@ -278,14 +287,14 @@ public class AdminActions {
 
             // Display class types
             System.out.println("\nAvailable Class Types:");
-            ClassTypes[] classTypes = ClassTypes.values();
+            ClassTypes[] classTypes = ClassTypes.getAllClassTypes();
             for (int j = 0; j < classTypes.length; j++) {
                 System.out.println((j + 1) + ". " + classTypes[j]);
             }
 
             System.out.print("Enter your choice (1-" + classTypes.length + "): ");
             int choice = scanner.nextInt();
-            ClassTypes selectedType = null;
+            ClassTypes selectedType;
 
             if (choice >= 1 && choice <= classTypes.length) {
                 selectedType = classTypes[choice - 1];
@@ -294,6 +303,7 @@ public class AdminActions {
                 i--;
                 continue;
             }
+
 
             System.out.print("Enter the total number of seats: ");
             int numOfSeats = getPositiveInteger(scanner, "Number of seats must be a positive integer: ");
@@ -342,8 +352,10 @@ public class AdminActions {
 
     public static void changePath(HashMap<String, Train> trainHashMap , Train train ,Scanner scanner){
         System.out.println("\t========== Changing path for Train ==========");
-        int noOfStops = addPath(train,scanner);
-        train.setNoOfStops(noOfStops);
+        boolean isPathAdded = false;
+        while (!isPathAdded){
+            isPathAdded = addPath(train,scanner);
+        }
         System.out.println("Path changed Successfully");
 
     }
